@@ -2,6 +2,7 @@ package wrap
 
 import (
 	"bytes"
+	"github.com/muesli/reflow/wordwrap"
 	"testing"
 )
 
@@ -149,5 +150,25 @@ func TestWrapBytes(t *testing.T) {
 	expected := []byte("foo\nbar")
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("expected:\n\n`%s`\n\nActual Output:\n\n`%s`", expected, actual)
+	}
+}
+
+func TestWrapWrappedWords(t *testing.T) {
+	tt := []struct {
+		Input        string
+		Expected     string
+		Limit        int
+		KeepNewlines bool
+	}{
+		{"the quick brown foxxxxxxxxxxxxxxxx jumped over the lazy dog.", "the quick brown\nfoxxxxxxxxxxxxxx\nxx jumped over \nthe lazy dog.", 16, false},
+	}
+	for _, tc := range tt {
+		t.Run(tc.Input, func(t *testing.T) {
+			wrappedWords := wordwrap.String(tc.Input, tc.Limit)
+			got := String(wrappedWords, tc.Limit)
+			if got != tc.Expected {
+				t.Fatalf("expected:\n\n`%s`\n\nActual Output:\n\n`%s`", tc.Expected, got)
+			}
+		})
 	}
 }

@@ -147,9 +147,21 @@ func TestWordWrap(t *testing.T) {
 }
 
 func TestWordWrapString(t *testing.T) {
-	actual := String("foo bar", 3)
-	expected := "foo\nbar"
-	if actual != expected {
-		t.Errorf("expected:\n\n`%s`\n\nActual Output:\n\n`%s`", expected, actual)
+	tt := []struct {
+		Input        string
+		Expected     string
+		Limit        int
+		KeepNewlines bool
+	}{
+		{"foo bar", "foo\nbar", 3, false},
+		{"the quick brown foxxxxxxxxxxxxxxxx jumped over the lazy dog.", "the quick brown\nfoxxxxxxxxxxxxxxxx \njumped over the\n lazy dog.", 16, false},
+	}
+	for _, tc := range tt {
+		t.Run(tc.Input, func(t *testing.T) {
+			got := String(tc.Input, tc.Limit)
+			if got != tc.Expected {
+				t.Errorf("expected:\n\n`%s`\n\nActual Output:\n\n`%s`", tc.Expected, got)
+			}
+		})
 	}
 }
